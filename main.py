@@ -43,6 +43,10 @@ def main():
         st.session_state.debug_mode = False
     if 'translator_name' not in st.session_state:
         st.session_state.translator_name = 'facebook/nllb-200-distilled-600M'
+    if 'manual_text' not in st.session_state:
+        st.session_state.manual_text = ""
+    if 'single_uploader' not in st.session_state:
+        st.session_state.single_uploader = None
 
     # Render UI
     render_info_section()
@@ -78,22 +82,13 @@ def main():
     uploaded_file = st.file_uploader("Upload document", type=["txt", "pdf", "docx"], key="single_uploader")
     manual_text = st.text_area("Or enter text manually:", height=150, key="manual_text")
 
-    # Clear logic: automatically clear one if the other is entered
-    if uploaded_file and manual_text:
+    # Automatically clear one if the other is entered
+    if uploaded_file and st.session_state.manual_text:
         st.warning("Text input cleared because a file was uploaded.")
-        manual_text = ""
-    elif manual_text and uploaded_file:
+        st.session_state.manual_text = ""
+    elif manual_text and st.session_state.single_uploader:
         st.warning("File input cleared because manual text was entered.")
-        uploaded_file = None
-
-    # Add dedicated clear buttons
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Clear Text Input"):
-            st.session_state.manual_text = ""
-    with col2:
-        if st.button("Clear File Input"):
-            st.session_state.single_uploader = None
+        st.session_state.single_uploader = None
 
     input_text = None
     if uploaded_file:
@@ -101,14 +96,20 @@ def main():
         if input_text:
             st.success("File uploaded successfully!")
             with st.expander("View extracted text"):
-                st.markdown(f'<div class="scroll-container">{input_text[:1000]}{"..." if len(input_text) > 1000 else ""}</div>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="scroll-container">{input_text[:1000]}{"..." if len(input_text) > 1000 else ""}</div>',
+                    unsafe_allow_html=True
+                )
     elif manual_text:
         input_text = manual_text
 
     # Process single input
     if input_text and st.button("Translate to Japanese", type="primary"):
         sentences = split_sentences(input_text)
-        results = process_text_batch(sentences, batch_size=1)
+        results = process_text_batch(
+            sentences,
+            batch_size=1
+        )
         if results:
             st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
             display_results(results, device)
