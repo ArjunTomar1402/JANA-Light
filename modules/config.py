@@ -3,15 +3,15 @@ import os
 import streamlit as st
 
 LANGUAGE_CODE_MAPPING = {
-    'en': 'eng_Latn',
-    'ko': 'kor_Hang',
-    'fr': 'fra_Latn',
-    'es': 'spa_Latn',
-    'it': 'ita_Latn',
-    'pt': 'por_Latn',
-    'ru': 'rus_Cyrl',
-    'ja': 'jpn_Jpan',
-    'hi': 'hin_Deva',
+    "en": "en",
+    "hi": "hi",
+    "ja": "ja",
+    "ko": "ko",
+    "fr": "fr",
+    "es": "es",
+    "it": "it",
+    "pt": "pt",
+    "ru": "ru"
 }
 
 MODEL_CONFIGS = {

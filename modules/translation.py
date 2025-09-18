@@ -18,6 +18,21 @@ def normalize_japanese(text: str) -> str:
 def normalize_korean(text: str) -> str:
     return text.strip()
 
+def normalize_french(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+def normalize_spanish(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+def normalize_italian(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+def normalize_portuguese(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+def normalize_russian(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
 def normalize_generic(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
@@ -42,8 +57,11 @@ def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache:
     else:
         conf = 1.0
 
-    src_lang_hf = LANGUAGE_CODE_MAPPING.get(src_lang_code, f"{src_lang_code}_Latn")
-    model_name_for_cache = model_name_for_cache or "facebook/nllb-200-light"  # lightweight model
+    # Map to HF model language code (only base language, no script suffix)
+    src_lang_hf = LANGUAGE_CODE_MAPPING.get(src_lang_code, src_lang_code)
+    
+    # Ensure a valid lightweight model name is always set
+    model_name_for_cache = model_name_for_cache or "facebook/m2m100_418M"
 
     try:
         translator = pipeline(
@@ -51,7 +69,7 @@ def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache:
             model=translator_model,
             tokenizer=translator_tokenizer,
             src_lang=src_lang_hf,
-            tgt_lang="jpn_Jpan",
+            tgt_lang="ja",
             device=0 if torch.cuda.is_available() else -1,
             max_length=2048,
             num_beams=5,
@@ -61,12 +79,22 @@ def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache:
         result = translator(text)[0]['translation_text']
 
         # Apply language-specific post-processing
-        if src_lang_hf == "hin_Deva":
+        if src_lang_hf == "hi":
             result = normalize_hindi(result)
-        elif src_lang_hf == "jpn_Jpan":
+        elif src_lang_hf == "ja":
             result = normalize_japanese(result)
-        elif src_lang_hf == "kor_Hang":
+        elif src_lang_hf == "ko":
             result = normalize_korean(result)
+        elif src_lang_hf == "fr":
+            result = normalize_french(result)
+        elif src_lang_hf == "es":
+            result = normalize_spanish(result)
+        elif src_lang_hf == "it":
+            result = normalize_italian(result)
+        elif src_lang_hf == "pt":
+            result = normalize_portuguese(result)
+        elif src_lang_hf == "ru":
+            result = normalize_russian(result)
         else:
             result = normalize_generic(result)
 
