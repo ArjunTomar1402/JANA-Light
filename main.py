@@ -37,8 +37,8 @@ st.markdown('<h2 class="sub-header">Japanese Auto-dialect Normalization & Adapta
 
 def main():
     # Initialize session state defaults
-    if 'model_option' not in st.session_state:
-        st.session_state.model_option = 'standard'
+    # if 'model_option' not in st.session_state:
+    #     st.session_state.model_option = 'standard'
     if 'generate_furigana' not in st.session_state:
         st.session_state.generate_furigana = False
     if 'debug_mode' not in st.session_state:
