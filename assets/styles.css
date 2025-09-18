@@ -229,3 +229,6 @@ button, .stButton button {
 .stMarkdown, .stText {
     color: #1f1f1f !important;
 }
+.st-do {
+    background-color: #BC002D !important;
+}
