@@ -64,7 +64,7 @@ def process_sentence(sentence: str) -> dict:
                 "Morphological Analysis": tokenized_output
             }
         else:
-            model_name_for_cache = st.session_state.get('translator_name', MODEL_CONFIGS['standard']['name'])
+            model_name_for_cache = st.session_state.get('translator_name',MODEL_CONFIGS.get('light', {}).get('name', 'facebook/m2m100_418M'))
             jp_translation = translate_text(clean_sentence, lang_code, model_name_for_cache)
 
             # Error handling
