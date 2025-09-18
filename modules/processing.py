@@ -25,7 +25,7 @@ CONFIDENCE_THRESHOLD = 0.5
 
 def process_sentence(sentence: str) -> dict:
     """Process a single sentence"""
-    lid_model, _, _, sudachi_tokenizer_obj, _ = get_models()
+    lid_model, translator_model, translator_tokenizer, sudachi_tokenizer_obj, _ = get_models()
     
     try:
         clean_sentence = sentence.replace("\n", " ").strip()
@@ -64,7 +64,7 @@ def process_sentence(sentence: str) -> dict:
                 "Morphological Analysis": tokenized_output
             }
         else:
-            model_name_for_cache = st.session_state.get('translator_name', MODEL_CONFIGS[st.session_state.model_option]['name'])
+            model_name_for_cache = st.session_state.get('translator_name', MODEL_CONFIGS['standard']['name'])
             jp_translation = translate_text(clean_sentence, lang_code, model_name_for_cache)
 
             # Error handling

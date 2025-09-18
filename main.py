@@ -39,8 +39,6 @@ def main():
     # Initialize session state defaults
     if 'model_option' not in st.session_state:
         st.session_state.model_option = 'standard'
-    if 'manual_lang' not in st.session_state:
-        st.session_state.manual_lang = 'auto'
     if 'generate_furigana' not in st.session_state:
         st.session_state.generate_furigana = False
     if 'debug_mode' not in st.session_state:
@@ -50,11 +48,10 @@ def main():
 
     # Render UI
     render_info_section()
-    model_option, custom_model_name, manual_lang, use_gpu = render_sidebar()
+    model_option, custom_model_name, _, use_gpu = render_sidebar()
 
     # Update session state
     st.session_state.model_option = model_option
-    st.session_state.manual_lang = manual_lang
     
     # Device selection
     device = torch.device("cuda" if torch.cuda.is_available() and use_gpu else "cpu")

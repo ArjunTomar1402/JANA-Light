@@ -21,9 +21,9 @@ def normalize_korean(text: str) -> str:
 def normalize_generic(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
-def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache: str = "nllb-200") -> str:
-    """Translate text to Japanese"""
-    lid_model, _, _, _, _ = get_models()
+def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache: str = None) -> str:
+    """Translate text to Japanese using JANA-Light"""
+    lid_model, translator_model, translator_tokenizer, _, _ = get_models()
     
     limiter = get_rate_limiter()
     if not limiter.allow():
@@ -43,11 +43,13 @@ def translate_text(text: str, src_lang_code: str = "auto", model_name_for_cache:
         conf = 1.0
 
     src_lang_hf = LANGUAGE_CODE_MAPPING.get(src_lang_code, f"{src_lang_code}_Latn")
+    model_name_for_cache = model_name_for_cache or "facebook/nllb-200-light"  # lightweight model
 
     try:
         translator = pipeline(
             "translation",
-            model="facebook/nllb-200-distilled-600M",
+            model=translator_model,
+            tokenizer=translator_tokenizer,
             src_lang=src_lang_hf,
             tgt_lang="jpn_Jpan",
             device=0 if torch.cuda.is_available() else -1,

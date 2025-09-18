@@ -1,6 +1,6 @@
 import streamlit as st
 import fasttext
-from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer, AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from sudachipy import dictionary
 import pykakasi
 import torch
@@ -16,7 +16,7 @@ kakasi_instance = None
 
 
 @st.cache_resource
-def load_models(model_size='standard', device_name: str = "cpu", custom_model_name: str = None):
+def load_models(model_size='light', device_name: str = "cpu", custom_model_name: str = None):
     """Load all required models"""
     progress_bar = st.progress(0, text="Loading models...")
     models = {}
@@ -37,14 +37,10 @@ def load_models(model_size='standard', device_name: str = "cpu", custom_model_na
     # Load translation model
     progress_bar.progress(40, text="Loading translation model...")
     try:
-        model_name = custom_model_name or MODEL_CONFIGS.get(model_size, MODEL_CONFIGS['standard'])['name']
+        model_name = custom_model_name or MODEL_CONFIGS.get('light', MODEL_CONFIGS['light'])['name']
 
-        if "m2m100" in model_name.lower():
-            tokenizer = M2M100Tokenizer.from_pretrained(model_name)
-            model = M2M100ForConditionalGeneration.from_pretrained(model_name)
-        else:
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
         models['translator_tokenizer'] = tokenizer
         models['translator_model'] = model.to(device_name)
