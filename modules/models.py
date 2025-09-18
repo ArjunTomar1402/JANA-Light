@@ -34,11 +34,18 @@ def load_models(model_size='light', device_name: str = "cpu", custom_model_name:
         st.error(f"Could not load fasttext model: {e}")
         models['lid_model'] = None
 
-    # Load translation model
-    progress_bar.progress(40, text="Loading translation model...")
-    try:
-        model_name = custom_model_name or MODEL_CONFIGS.get('light', MODEL_CONFIGS['light'])['name']
+   # Load translation model
+progress_bar.progress(40, text="Loading translation model...")
 
+# Determine model name safely
+model_name = custom_model_name or MODEL_CONFIGS.get('light', {}).get('name')
+if not model_name:
+    st.error("Translation model configuration for 'light' not found in MODEL_CONFIGS.")
+    models['translator_tokenizer'] = None
+    models['translator_model'] = None
+    models['translator_name'] = None
+else:
+    try:
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
