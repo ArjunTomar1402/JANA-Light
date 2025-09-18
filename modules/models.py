@@ -36,9 +36,10 @@ def load_models(model_size='light', device_name: str = "cpu", custom_model_name:
 
     # Load translation model
     progress_bar.progress(40, text="Loading translation model...")
-    model_name = custom_model_name or MODEL_CONFIGS.get('light', {}).get('name')
+    model_config = MODEL_CONFIGS.get(model_size, {})
+    model_name = custom_model_name or model_config.get('name')
     if not model_name:
-        st.error("Translation model configuration for 'light' not found in MODEL_CONFIGS.")
+        st.error(f"Translation model configuration for '{model_size}' not found in MODEL_CONFIGS.")
         models['translator_tokenizer'] = None
         models['translator_model'] = None
         models['translator_name'] = None
