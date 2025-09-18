@@ -37,8 +37,6 @@ st.markdown('<h2 class="sub-header">Japanese Auto-dialect Normalization & Adapta
 
 def main():
     # Initialize session state defaults
-    # if 'model_option' not in st.session_state:
-    #     st.session_state.model_option = 'standard'
     if 'generate_furigana' not in st.session_state:
         st.session_state.generate_furigana = False
     if 'debug_mode' not in st.session_state:
@@ -80,26 +78,41 @@ def main():
     uploaded_file = st.file_uploader("Upload document", type=["txt", "pdf", "docx"], key="single_uploader")
     manual_text = st.text_area("Or enter text manually:", height=150, key="manual_text")
 
+    # Clear logic: automatically clear one if the other is entered
+    if uploaded_file and manual_text:
+        st.warning("Text input cleared because a file was uploaded.")
+        manual_text = ""
+    elif manual_text and uploaded_file:
+        st.warning("File input cleared because manual text was entered.")
+        uploaded_file = None
+
+    # Add dedicated clear buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Clear Text Input"):
+            st.session_state.manual_text = ""
+    with col2:
+        if st.button("Clear File Input"):
+            st.session_state.single_uploader = None
+
     input_text = None
     if uploaded_file:
         input_text = extract_text_from_file(uploaded_file)
         if input_text:
             st.success("File uploaded successfully!")
             with st.expander("View extracted text"):
-                st.text(input_text[:1000] + ("..." if len(input_text) > 1000 else ""))
+                st.markdown(f'<div class="scroll-container">{input_text[:1000]}{"..." if len(input_text) > 1000 else ""}</div>', unsafe_allow_html=True)
     elif manual_text:
         input_text = manual_text
 
     # Process single input
     if input_text and st.button("Translate to Japanese", type="primary"):
         sentences = split_sentences(input_text)
-        # Updated call: removed manual_lang argument
-        results = process_text_batch(
-            sentences,
-            batch_size=1
-        )
+        results = process_text_batch(sentences, batch_size=1)
         if results:
+            st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
             display_results(results, device)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # Batch processing section
     render_batch_processor(extract_text_from_file, split_sentences, process_text_batch)

@@ -1,5 +1,3 @@
-/* File: assets/styles.css */
-
 /* Main headers */
 .main-header {
     font-size: 4rem;
@@ -12,6 +10,45 @@
     color: #e60026; /* softer red */
     margin-bottom: 1rem;
 }
+
+/* Prevent visual glitches in expanders */
+.stExpander {
+    overflow: hidden;
+}
+
+/* Dedicated scroll container for text/file results */
+.scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f0f0f0;
+}
+
+/* Webkit scrollbar styling */
+.scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+/* Force GPU rendering during scroll */
+.scroll-container {
+    transform: translate3d(0, 0, 0);
+    will-change: scroll-position;
+}
+
+/* Header and spacing adjustments */
+.main-header { margin-bottom: 0.25em; }
+.sub-header { margin-bottom: 1em; color: #555; }
+.stButton>button { margin-top: 0.5em; margin-right: 0.5em; }
 
 /* Expander summary & content */
 .st-expander {
